@@ -1,0 +1,28 @@
+---
+title: "main"
+author: "Xiaomeng Liu"
+date: "2024-09-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+```
+
+
+1. Read in data
+```{r}
+test<-read.csv("Assignment_Test.csv")
+train<-read.csv("Assignment_train.csv")
+```
+
+2. Generate Model Based on Training Set
+
+```{r}
+train_mod<-train
+train_mod$Application.Status<-as.factor(train_mod$Application.Status)
+model1<-glm(Application.Status~GENDER +Phone.Social.Premium.toi+Phone.Social.Premium.zoho , data = train_mod, family=binomial)
+summary(model1)
+```
+
