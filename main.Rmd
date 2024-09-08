@@ -8,6 +8,7 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
+library(caret)
 ```
 
 
@@ -17,12 +18,25 @@ test<-read.csv("Assignment_Test.csv")
 train<-read.csv("Assignment_train.csv")
 ```
 
+```{r}
+str(train)
+```
+
 2. Generate Model Based on Training Set
 
 ```{r}
 train_mod<-train
 train_mod$Application.Status<-as.factor(train_mod$Application.Status)
+train_mod$phone_phoneFootprintStrengthOverall<-as.factor(train_mod$phone_phoneFootprintStrengthOverall)
 model1<-glm(Application.Status~GENDER +Phone.Social.Premium.toi+Phone.Social.Premium.zoho , data = train_mod, family=binomial)
 summary(model1)
+```
+
+```{r}
+model2<-train(Application.Status~.,data=train_mod,method="glm",metric="logloss",
+              trCrontrol=trainControl(method="cv",number = 5, classProbs = TRUE,
+                                      summaryFunction = mnLogLoss),
+              preProcess=c("center","scale")
+              )
 ```
 
