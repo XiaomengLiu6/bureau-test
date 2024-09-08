@@ -19,13 +19,26 @@ train<-read.csv("Assignment_train.csv")
 ```
 
 ```{r}
+ls(train,sorted = FALSE)
 str(train)
 ```
 
-2. Generate Model Based on Training Set
+2.data validation and cleaning
 
 ```{r}
-train_mod<-train
+train_mod<-train[,c(9,10,11,12,13,14,16,17,18,20,21,22,23,24,27)]
+train_mod<-cbind(train_mod,train[,32:55])
+# 39 variables left after this modification
+```
+
+```{r}
+str(train_mod)
+```
+
+3. Generate Model Based on Training Set
+
+```{r}
+# first attempt
 train_mod$Application.Status<-as.factor(train_mod$Application.Status)
 train_mod$phone_phoneFootprintStrengthOverall<-as.factor(train_mod$phone_phoneFootprintStrengthOverall)
 model1<-glm(Application.Status~GENDER +Phone.Social.Premium.toi+Phone.Social.Premium.zoho , data = train_mod, family=binomial)
@@ -33,10 +46,12 @@ summary(model1)
 ```
 
 ```{r}
+# second attempt
 model2<-train(Application.Status~.,data=train_mod,method="glm",metric="logloss",
               trCrontrol=trainControl(method="cv",number = 5, classProbs = TRUE,
                                       summaryFunction = mnLogLoss),
               preProcess=c("center","scale")
               )
+summary(model2)
 ```
 
