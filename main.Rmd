@@ -49,15 +49,16 @@ train_mod[,16:27]<-lapply(train_mod[,c(16:27)],factor)
 train_mod[,2]<-as.numeric(train_mod[,2])
 str(train_mod)
 ```
-```{r}
-train_mod <-tibble(train_mod)
-train_mod<-train_mod %>% drop_na()
-str(train_mod)
+```{r,eval=FALSE}
+#train_mod <-tibble(train_mod)
+#train_mod<-train_mod %>% drop_na() 
+# remove null values will cause the response to be single value
+#str(train_mod)
+train_mod[is.na(train_mod)]<-0
 ```
 
 ```{r}
 #column1 and 3 has only 1 level so drop it
-#train_mod<-train_mod[train_mod$EMPLOYER.TYPE != "",]
 train_mod<-train_mod[,c(-1,-3,-4,-6,-8,-9,-12)]
 
 
@@ -76,12 +77,18 @@ summary(model1)
 
 ```{r}
 # second attempt
-model2<-train(Application.Status~AGE,data=train_mod,method="glm",
-              metric="logloss",
-              trCrontrol=trainControl(method="cv",number = 5, classProbs = TRUE,
-                                      summaryFunction = mnLogLoss),
+model2<-train(Application.Status~.,data=train_mod,method="glm",
+              #metric="logloss",
+              #trCrontrol=trainControl(method="cv",number = 5, classProbs = TRUE,
+                                      #summaryFunction = mnLogLoss),
               preProcess=c("center","scale")
               )
 summary(model2)
 ```
 
+4. Make the prediction
+
+```{r}
+testresult<-predict(model2,data = test)
+unique(testresult)
+```
